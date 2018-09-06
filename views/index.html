@@ -393,17 +393,17 @@
 		function createChat(obj,ismine){
 			if(obj.data != undefined && obj.data != ''){
 				var $li;
-				$('.user_list').find('li').each(function(id,item){
-					var whose = $('.user_active').attr('data-id');
-					//未解决,消息在其他好友对话框下收到,还有数据库名更改
-					if(whose == obj.touserid){
-						if(ismine && obj.type != 'enter'){
-							$li = '<li class="me"><img src="'+obj.headimg+'" title="'+obj.username+'"><span>'+obj.data+'</span></li>';
-						}else{
-							$li = '<li class="other"><img src="'+obj.headimg+'" title="'+obj.username+'"><span>'+obj.data+'</span></li>';
-						}
+				var whose = $('.user_active').attr('data-id');
+				//未解决,消息在其他好友对话框下收到,还有数据库名更改
+				if(whose == obj.touserid){
+					if(ismine && obj.type != 'enter'){
+						console.log(ismine+' AND '+ obj.type);
+						$li = '<li class="me"><img src="'+obj.headimg+'" title="'+obj.username+'"><span>'+obj.data+'</span></li>';
+					}else{
+						console.log(ismine+' AND1 '+ obj.type);
+						$li = '<li class="other"><img src="'+obj.headimg+'" title="'+obj.username+'"><span>'+obj.data+'</span></li>';
 					}
-				})
+				}
 				$('.content').append($li);
 			}
 			chat.scrollTop = chat.scrollHeight;
