@@ -173,7 +173,7 @@ var server = ws.createServer(function(connect){
 	connect.on('error',function(){
 		console.log('websocket连接出错!');
 	})
-}).listen(3001);
+}).listen(3000);
 
 function broadcast(str) {
     server.connections.forEach(function(connection) {
