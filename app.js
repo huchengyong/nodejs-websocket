@@ -15,7 +15,7 @@ var urlencodedParser = bodyParser.urlencoded({extended:false});
 var pool = mysql.createPool({
 	host:"localhost",
     user:"root",
-    password:"root",
+    password:"cx1k@ZQJ",
     database:"websocket"
 })
 
