@@ -308,7 +308,7 @@
 		user.username = $('.own_name').find('span').text();
 		user.headimg = $('.own_name').find('img').prop('src');
 		if('WebSocket' in window){
-			websocket = new WebSocket("ws://localhost:3001/");
+			websocket = new WebSocket("ws://localhost:3000/");
 		}else{
 			alert('您的浏览器不支持WebSocket');
 		}
