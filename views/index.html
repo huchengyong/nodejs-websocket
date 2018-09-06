@@ -310,7 +310,6 @@
 		$('.own_head').css({background:'url('+user.headimg+')'});
 
 		if('WebSocket' in window){
-			//本地使用localhost,如果部署到服务器上,最好使用外网ip地址
 			websocket = new WebSocket("ws://182.61.13.2:3000/");
 		}else{
 			alert('您的浏览器不支持WebSocket');
@@ -353,7 +352,6 @@
 			websocket.send(JSON.stringify(user));
 			$(this).siblings('li').removeClass('user_active');
 			$(this).addClass('user_active');
-			//点击获取与该好友的聊天记录
 			$.post('/getRecords',{from_uid:user.userid,to_uid:user.touserid},function(result){
 				var result = JSON.parse(result);
 				var li = '';
@@ -378,7 +376,6 @@
 			}
 		})
 
-		//获取输入框内的内容并发送
 		function getValues(){
 			if($("#input_box").val() == ''){
 				alert('聊天内容不能为空');
@@ -394,16 +391,13 @@
 			websocket.send(JSON.stringify(user));
 		}
 
-		//创建聊天元素
 		function createChat(obj,ismine){
 			if(obj.data != undefined && obj.data != ''){
 				var $li;
 				var whose = $('.user_active').attr('data-id');
-				//点击头像和刷新页面的消息类型都是enter类型,不显示聊天内容
 				if(ismine && obj.type != 'enter'){
 					$li = '<li class="me"><img src="'+obj.headimg+'" title="'+obj.username+'"><span>'+obj.data+'</span></li>';
 				}else{
-					//判断当前选中的头像是否是发送消息的人.不加此判断的话在任何好友对话框中都能接收到任何消息.
 					if(whose == obj.uid){
 						$li = '<li class="other"><img src="'+obj.headimg+'" title="'+obj.username+'"><span>'+obj.data+'</span></li>';
 					}

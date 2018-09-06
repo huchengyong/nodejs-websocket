@@ -52,7 +52,6 @@ app.get('/',function(req,res){
 				}
 				new Promise(function(resolve,reject){
 					var $friends = result[0].friends;
-					//获取自己的好友列表
 					connection.query('select * from user where id in ('+$friends+')',function(err,friends){
 						if(err){
 							reject('系统错误');
@@ -60,9 +59,7 @@ app.get('/',function(req,res){
 						resolve(friends);
 					})
 				}).then(function(friends){
-					//默认获取自己和好友列表第一位好友的聊天记录
 					connection.query('select * from chat_record where (from_uid = '+$uid+' and to_uid = '+friends[0].id+') or (from_uid = '+friends[0].id+' and to_uid = '+$uid+') order by addtime asc',function(err,records){
-						//默认获取好友列表的第一位好友的头像和用户名
 						connection.query('select * from user where id = '+friends[0].id,function(err,toinfo){
 							res.render("index.html",{info:result[0],toinfo:toinfo[0],friends:friends,uid:$uid,records:records});
 						})
@@ -113,7 +110,6 @@ app.get('/logout',function(req,res){
 	res.send('成功退出登录! 前往<a href="/">首页</a>');
 })
 
-//获取聊天记录接口
 app.post('/getRecords',urlencodedParser,function(req,res){
 	var from_uid = req.body.from_uid;
 	var to_uid = req.body.to_uid;
@@ -129,21 +125,17 @@ app.post('/getRecords',urlencodedParser,function(req,res){
 	})
 })
 
-//连接数
 var connections = [];
 var message = {};
 
 var server = ws.createServer(function(connect){
 	connect.on('text',function(str){
 		user = JSON.parse(str);
-		//每个用户登录就插入一条连接数
 		connections.push(user);
 		// connections = connections.slice(-2);
-		//发送人信息
 		message.uid = user.userid;
 		message.headimg = user.headimg;
 		message.username = user.username;
-		//接收人信息
 		message.touserid = user.touserid;
 		message.toheadimg = user.toheadimg;
 		message.tousername = user.tousername;
@@ -155,12 +147,10 @@ var server = ws.createServer(function(connect){
 		}else{
 			message.data = '';
 		}
-		//发送消息不是enter类型,并且发送人和接收人不能为同一个
 		if(user.type != 'enter'  && user.userid != user.touserid){
 			pool.getConnection(function(err,conn){
 				if(err){
 				}else{
-					//每次聊天插入一条聊天记录
 					var sql = 'insert into chat_record (from_uid,to_uid,content,addtime) values ('+user.userid+','+user.touserid+',\''+user.data+'\','+Date.parse(new Date())/1000+')';
 					conn.query(sql,function(err,result){
 					})
@@ -178,7 +168,6 @@ var server = ws.createServer(function(connect){
 	})
 }).listen(3000);
 
-//循环发送消息
 function broadcast(str) {
     server.connections.forEach(function(connection) {
         connection.sendText(str);
