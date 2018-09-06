@@ -1,5 +1,5 @@
 0. 首先你需要在根目录下创建一个config.js,内容如下:
-================================
+#####
 var dbconfig = {
 	host:"localhost",
     user:"××××××",	//数据库用户名
@@ -7,7 +7,7 @@ var dbconfig = {
     database:"websocket",	//数据库名
 };
 module.exports = dbconfig;
-================================
+#####
 1. 第二步打开控制台,进入到根目录下,运行 'npm install' 命令,安装node_modules,确保你的电脑安装了nodejs和npm
 2. 创建数据库,数据库名可自定义,不过需要修改配置文件的database属性.建议使用默认数据库名'websocket',如果你是在本地windows系统中使用,可以直接使用数据库终端工具导入
 根目录下的websocket.sql文件,即可生成数据表;
