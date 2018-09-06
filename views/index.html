@@ -308,8 +308,9 @@
 		user.username = $('.own_name').find('span').text();
 		user.headimg = $('.own_name').find('img').prop('src');
 		$('.own_head').css({background:'url('+user.headimg+')'});
-		
+
 		if('WebSocket' in window){
+			//本地使用localhost,如果部署到服务器上,最好使用外网ip地址
 			websocket = new WebSocket("ws://182.61.13.2:3000/");
 		}else{
 			alert('您的浏览器不支持WebSocket');
@@ -440,17 +441,6 @@
 				var chat = document.getElementById('chatbox');
 				var btn = document.getElementById('send');
 				var talk = document.getElementById('talkbox');
-				// btn.onclick=function(){
-				// 	if(text.value ==''){
-			 //            alert('不能发送空消息');
-			 //        }else{
-				// 		chat.innerHTML += '<li class="me"><img src="'+'images/own_head.jpg'+'"><span>'+text.value+'</span></li>';
-				// 		text.value = '';
-				// 		chat.scrollTop=chat.scrollHeight;
-				// 		talk.style.background="#fff";
-				// 		text.style.background="#fff";
-				// 	};
-				// };
 			};
 			a();
 			b();
