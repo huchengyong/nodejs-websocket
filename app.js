@@ -8,16 +8,12 @@ const session = require('express-session');
 const md5 = require('md5');
 const ws = require('nodejs-websocket');
 const bodyParser = require('body-parser');
+const dbconfig = require('./config.js');
 
 var jsonParser = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({extended:false});
 
-var pool = mysql.createPool({
-	host:"localhost",
-    user:"root",
-    password:"cx1k@ZQJ",
-    database:"websocket"
-})
+var pool = mysql.createPool(dbconfig);
 
 app.use(cookieParser());
 app.use(session({
@@ -84,7 +80,7 @@ app.get('/reg',function(req,res){
 	pool.getConnection(function(err,connection){
 		connection.query('insert into user (username,password) values (\''+username+'\',\''+password+'\')',function(err,result){
 			if(result){
-				res.send('注册成功,您可以现在<a href="/login?name='+username+'&pwd='+req.query.pwd+'">登录</a>;也可以返回<a href="/">首页</a>');
+				res.send('注册成功,您可以现在<a href="/login?name='+username+'&pwd='+req.query.pwd+'">登录</a>;也可以返回<a href="/">首页</a><script type="text/javascript">setInterval(function(){window.location="/"},500);</script>');
 			}
 		});
 		connection.release();
@@ -102,7 +98,7 @@ app.get('/login',function(req,res){
 			if(result){
 				req.session.userid = result[0].id;
 				req.session.username = result[0].username;
-				res.send('登陆成功,跳转<a href="/">首页</a><script type="text/javascript">setInterval(function(){window.location="/"},1000);</script>');
+				res.send('登陆成功,跳转<a href="/">首页</a><script type="text/javascript">setInterval(function(){window.location="/"},500);</script>');
 			}else{
 				res.send('用户不存在或账号密码错误');
 			}
@@ -117,6 +113,7 @@ app.get('/logout',function(req,res){
 	res.send('成功退出登录! 前往<a href="/">首页</a>');
 })
 
+//获取聊天记录接口
 app.post('/getRecords',urlencodedParser,function(req,res){
 	var from_uid = req.body.from_uid;
 	var to_uid = req.body.to_uid;
@@ -132,34 +129,40 @@ app.post('/getRecords',urlencodedParser,function(req,res){
 	})
 })
 
+//连接数
 var connections = [];
-var signallines = [];
-var onlines = [];
 var message = {};
 
 var server = ws.createServer(function(connect){
 	connect.on('text',function(str){
 		user = JSON.parse(str);
+		//每个用户登录就插入一条连接数
 		connections.push(user);
-		onlines.push(user);
-		connections = connections.slice(-2);
+		// connections = connections.slice(-2);
+		//发送人信息
 		message.uid = user.userid;
 		message.headimg = user.headimg;
 		message.username = user.username;
-		message.type = user.type;
+		//接收人信息
 		message.touserid = user.touserid;
 		message.toheadimg = user.toheadimg;
 		message.tousername = user.tousername;
+
+		message.type = user.type;
+		
 		if(user.type != 'enter'){
 			message.data = user.data;
 		}else{
 			message.data = '';
 		}
+		//发送消息不是enter类型,并且发送人和接收人不能为同一个
 		if(user.type != 'enter'  && user.userid != user.touserid){
 			pool.getConnection(function(err,conn){
 				if(err){
 				}else{
-					conn.query('insert into chat_record (from_uid,to_uid,content,addtime) values ('+user.userid+','+user.touserid+',\''+user.data+'\','+Date.parse(new Date())/1000+')',function(err,result){
+					//每次聊天插入一条聊天记录
+					var sql = 'insert into chat_record (from_uid,to_uid,content,addtime) values ('+user.userid+','+user.touserid+',\''+user.data+'\','+Date.parse(new Date())/1000+')';
+					conn.query(sql,function(err,result){
 					})
 				}
 				conn.release();
@@ -175,6 +178,7 @@ var server = ws.createServer(function(connect){
 	})
 }).listen(3000);
 
+//循环发送消息
 function broadcast(str) {
     server.connections.forEach(function(connection) {
         connection.sendText(str);
