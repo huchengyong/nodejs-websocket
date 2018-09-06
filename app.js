@@ -176,9 +176,7 @@ var server = ws.createServer(function(connect){
 }).listen(3000);
 
 function broadcast(str) {
-	console.log('broadcast:'+str);
     server.connections.forEach(function(connection) {
-    	console.log('connection:'+connection);
         connection.sendText(str);
     })
 }

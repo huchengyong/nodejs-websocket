@@ -320,12 +320,11 @@
 
 		websocket.onmessage = function(e){
 			var obj = JSON.parse(e.data);
-			console.log(obj);
+			var ismine = false;
 			if(obj.uid == user.userid){
-				createChat(obj,true);
-			}else{
-				createChat(obj,false);
+				ismine = true;
 			}
+			createChat(obj,ismine);
 		}
 
 		websocket.onclose = function(){
@@ -394,13 +393,10 @@
 			if(obj.data != undefined && obj.data != ''){
 				var $li;
 				var whose = $('.user_active').attr('data-id');
-				//未解决,消息在其他好友对话框下收到,还有数据库名更改
-				if(whose == obj.touserid){
+				if(whose == obj.touserid || whose == obj.uid){
 					if(ismine && obj.type != 'enter'){
-						console.log(ismine+' AND '+ obj.type);
 						$li = '<li class="me"><img src="'+obj.headimg+'" title="'+obj.username+'"><span>'+obj.data+'</span></li>';
 					}else{
-						console.log(ismine+' AND1 '+ obj.type);
 						$li = '<li class="other"><img src="'+obj.headimg+'" title="'+obj.username+'"><span>'+obj.data+'</span></li>';
 					}
 				}
